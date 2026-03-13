@@ -9,9 +9,13 @@ use Illuminate\Http\Request;
 
 class EstadisticaController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $estadisticas = Estadistica::where('activo', true)->orderBy('orden')->get();
+        $query = Estadistica::orderBy('orden');
+        if (!$request->has('all')) {
+            $query->where('activo', true);
+        }
+        $estadisticas = $query->get();
 
         return response()->json([
             'success' => true,

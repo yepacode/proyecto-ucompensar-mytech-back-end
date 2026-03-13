@@ -9,12 +9,13 @@ use Illuminate\Http\Request;
 
 class CategoriaController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $categorias = Categoria::where('activo', true)
-            ->orderBy('orden')
-            ->withCount('proyectos')
-            ->get();
+        $query = Categoria::orderBy('orden')->withCount('proyectos');
+        if (!$request->has('all')) {
+            $query->where('activo', true);
+        }
+        $categorias = $query->get();
 
         return response()->json([
             'success' => true,

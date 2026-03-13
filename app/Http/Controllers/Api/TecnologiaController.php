@@ -9,9 +9,13 @@ use Illuminate\Http\Request;
 
 class TecnologiaController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $tecnologias = Tecnologia::where('activo', true)->orderBy('orden')->get();
+        $query = Tecnologia::orderBy('orden');
+        if (!$request->has('all')) {
+            $query->where('activo', true);
+        }
+        $tecnologias = $query->get();
 
         return response()->json([
             'success' => true,
@@ -24,7 +28,7 @@ class TecnologiaController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'logo' => 'required|string|max:500',
+            'logo' => 'nullable|string|max:500',
             'orden' => 'nullable|integer',
             'activo' => 'nullable|boolean',
         ]);
@@ -51,7 +55,7 @@ class TecnologiaController extends Controller
     {
         $request->validate([
             'nombre' => 'sometimes|required|string|max:100',
-            'logo' => 'sometimes|required|string|max:500',
+            'logo' => 'nullable|string|max:500',
             'orden' => 'nullable|integer',
             'activo' => 'nullable|boolean',
         ]);

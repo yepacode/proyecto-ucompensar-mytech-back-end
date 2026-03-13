@@ -9,9 +9,13 @@ use Illuminate\Http\Request;
 
 class ProyectoController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $proyectos = Proyecto::where('activo', true)->orderBy('orden')->get();
+        $query = Proyecto::orderBy('orden');
+        if (!$request->has('all')) {
+            $query->where('activo', true);
+        }
+        $proyectos = $query->get();
 
         return response()->json([
             'success' => true,
@@ -25,12 +29,13 @@ class ProyectoController extends Controller
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'categoria' => 'required|string|max:100',
-            'tecnologias' => 'required|array',
+            'categoria' => 'nullable|string|max:100',
+            'categoria_id' => 'nullable|integer|exists:categorias,id',
+            'tecnologias' => 'nullable|array',
             'tecnologias.*' => 'string',
             'color_fondo' => 'nullable|string|max:255',
             'icono' => 'nullable|string',
-            'imagen' => 'required|string|max:500',
+            'imagen' => 'nullable|string|max:500',
             'orden' => 'nullable|integer',
             'activo' => 'nullable|boolean',
         ]);
@@ -58,12 +63,13 @@ class ProyectoController extends Controller
         $request->validate([
             'titulo' => 'sometimes|required|string|max:255',
             'descripcion' => 'sometimes|required|string',
-            'categoria' => 'sometimes|required|string|max:100',
-            'tecnologias' => 'sometimes|required|array',
+            'categoria' => 'nullable|string|max:100',
+            'categoria_id' => 'nullable|integer|exists:categorias,id',
+            'tecnologias' => 'nullable|array',
             'tecnologias.*' => 'string',
             'color_fondo' => 'nullable|string|max:255',
             'icono' => 'nullable|string',
-            'imagen' => 'sometimes|required|string|max:500',
+            'imagen' => 'nullable|string|max:500',
             'orden' => 'nullable|integer',
             'activo' => 'nullable|boolean',
         ]);

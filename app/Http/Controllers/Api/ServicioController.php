@@ -9,9 +9,13 @@ use Illuminate\Http\Request;
 
 class ServicioController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $servicios = Servicio::where('activo', true)->orderBy('orden')->get();
+        $query = Servicio::orderBy('orden');
+        if (!$request->has('all')) {
+            $query->where('activo', true);
+        }
+        $servicios = $query->get();
 
         return response()->json([
             'success' => true,
@@ -25,7 +29,7 @@ class ServicioController extends Controller
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'caracteristicas' => 'required|array',
+            'caracteristicas' => 'nullable|array',
             'caracteristicas.*' => 'string',
             'icono' => 'nullable|string',
             'color_fondo' => 'nullable|string|max:255',
@@ -56,7 +60,7 @@ class ServicioController extends Controller
         $request->validate([
             'titulo' => 'sometimes|required|string|max:255',
             'descripcion' => 'sometimes|required|string',
-            'caracteristicas' => 'sometimes|required|array',
+            'caracteristicas' => 'nullable|array',
             'caracteristicas.*' => 'string',
             'icono' => 'nullable|string',
             'color_fondo' => 'nullable|string|max:255',
