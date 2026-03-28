@@ -12,14 +12,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // ─── Auth Routes ────────────────────────────────────────────
+Route::get('/users', [AuthController::class, 'index']);
+Route::get('/users/{user}', [AuthController::class, 'show']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::put('/users/{user}', [AuthController::class, 'update']);
+Route::delete('/users/{user}', [AuthController::class, 'destroy']);
 
 // ─── Public Routes (read-only) ──────────────────────────────
 Route::post('/contactos', [ContactoController::class, 'store']);
 
 Route::get('/servicios', [ServicioController::class, 'index']);
 Route::get('/servicios/{servicio}', [ServicioController::class, 'show']);
+Route::post('/servicios', [ServicioController::class, 'store']);
+Route::put('/servicios/{servicio}', [ServicioController::class, 'update']);
+Route::delete('/servicios/{servicio}', [ServicioController::class, 'destroy']);
 
 Route::get('/proyectos', [ProyectoController::class, 'index']);
 Route::get('/proyectos/{proyecto}', [ProyectoController::class, 'show']);
@@ -42,11 +49,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/contactos/{contacto}', [ContactoController::class, 'show']);
     Route::put('/contactos/{contacto}', [ContactoController::class, 'update']);
     Route::delete('/contactos/{contacto}', [ContactoController::class, 'destroy']);
-
-    // Servicios (create, update, delete)
-    Route::post('/servicios', [ServicioController::class, 'store']);
-    Route::put('/servicios/{servicio}', [ServicioController::class, 'update']);
-    Route::delete('/servicios/{servicio}', [ServicioController::class, 'destroy']);
 
     // Proyectos (create, update, delete)
     Route::post('/proyectos', [ProyectoController::class, 'store']);

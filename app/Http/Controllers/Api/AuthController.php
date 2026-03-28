@@ -11,6 +11,17 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function index(): JsonResponse
+    {
+        $users = User::all();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuarios obtenidos exitosamente',
+            'data' => $users,
+        ]);
+    }
+
     public function register(Request $request): JsonResponse
     {
         $request->validate([
@@ -61,6 +72,49 @@ class AuthController extends Controller
                 'user' => $user,
                 'token' => $token,
             ],
+        ]);
+    }
+
+    public function show(User $user): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario obtenido exitosamente',
+            'data' => $user,
+        ]);
+    }
+
+    public function update(Request $request, User $user): JsonResponse
+    {
+        $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'sometimes|required|string|min:8',
+        ]);
+
+        $data = $request->only(['name', 'email']);
+
+        if ($request->has('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario actualizado exitosamente',
+            'data' => $user,
+        ]);
+    }
+
+    public function destroy(User $user): JsonResponse
+    {
+        $user->tokens()->delete();
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario eliminado exitosamente',
         ]);
     }
 
